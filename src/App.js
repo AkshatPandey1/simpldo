@@ -1,26 +1,30 @@
-import React from "react";
+import React, {useState} from "react";
 import Heading from "./components/Heading";
-import ToDo from "./components/ToDo";
-function App() {
+import ToDoLists from "./components/ToDoLists";
+import Notes from "./components/Notes"
+import Login from "./components/Login";
 
-  // let [data, setState] = useState({API: "Loading..."});
-  //
-  // useEffect(() => {
-  //   fetch("http://localhost:9000/testData")
-  //       .then((val) => val.json())
-  //       .then((val) => {
-  //         setState(val);
-  //       });
-  //
-  //   return () => {
-  //     setState({API: "Loading..."});
-  //   }
-  // },[]);
+let loggedIn = false;
+
+function App() {
+    let [user, setUser] = useState({
+        username: "",
+        name: ""
+    });
+    function getUserName(userGet) {
+        loggedIn = true;
+        setUser(userGet);
+    }
 
   return (
       <div className="App">
-          <Heading name={"AP"}/>
-          <ToDo/>
+          {loggedIn ?
+          <div className="mainpage">
+              <Heading name={user.name}/>
+              <ToDoLists uname={user.username}/>
+              <Notes uname={user.username}/>
+          </div>: <Login func={getUserName}/>}
+
       </div>
   );
 }

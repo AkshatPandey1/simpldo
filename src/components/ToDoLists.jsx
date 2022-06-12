@@ -29,7 +29,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-function writeUserData(username, name, tasks) {
+function writeUserTasks(username, tasks) {
     let new_tasks = deepCopy(tasks);
     new_tasks.forEach((task, index, arr) => {
         arr[index] = {
@@ -38,14 +38,10 @@ function writeUserData(username, name, tasks) {
         }
     });
     const db = getDatabase(app);
-    set(ref(db, 'users/' + username), {
-        name: name,
-        task_list: [{title: "base_task", date: new Date().getTime()}].concat(new_tasks)
-    });
+    set(ref(db, 'users/' + username + "/task_list"), new_tasks);
 }
 
-function ToDo() {
-
+function ToDoLists(props) {
 
     let [taskList, setAllTasks] = useState([]);
 
@@ -56,7 +52,7 @@ function ToDo() {
 
     useEffect(() => {
         const db = ref(getDatabase());
-        get(child(db, `users/${"AP3"}/task_list`)).then((snapshot) => {
+        get(child(db, 'users/' + props.uname + '/task_list')).then((snapshot) => {
             if (snapshot.exists()) {
                 let array = deepCopy(snapshot.val())
                 array.forEach((task, index, arr) => {
@@ -95,7 +91,7 @@ function ToDo() {
                     }).sort((a, b) => (a.date > b.date) ? 1 : 0));
                 }
 
-                setTasks(array.slice(1));
+                setTasks(array);
             } else {
                 console.log("Hello there");
             }
@@ -152,7 +148,7 @@ function ToDo() {
 
         let newList = [...taskList, task];
         setAllTasks(newList);
-        writeUserData("AP3", "Akshat Pandey", newList);
+        writeUserTasks(props.uname, newList);
 
         let todayDate = new Date();
         let taskDate = task.date;
@@ -184,14 +180,14 @@ function ToDo() {
         })
 
         let unAlteredLists = lists.filter((val, index) => {
-            return id !== index;
+            return funcID !== index;
         })
 
         functions[funcID](alteredList);
 
         let newList = alteredList.concat(unAlteredLists[0]).concat(unAlteredLists[1]);
         setAllTasks(newList);
-        writeUserData("AP3", "Akshat Pandey", newList);
+        writeUserTasks(props.uname, newList);
 
     }
 
@@ -243,4 +239,4 @@ function ToDo() {
     );
 }
 
-export default ToDo;
+export default ToDoLists;
